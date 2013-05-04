@@ -6,6 +6,21 @@ module SimpleAddressBook
       @db = PG.connect(dbname: name)
     end
 
+    def find_contacts(find_by, entry)
+      case find_by
+      when "city"
+        @db.exec("SELECT * FROM addresses
+                  WHERE city = $1;", [entry.encode("UTF-8")]) do |row|
+          yield row
+        end
+      when "zip_code"
+        @db.exec("SELECT * FROM addresses
+                  WHERE zip_code = $1;", [entry.to_i]) do |row|
+          yield row
+        end
+      end
+    end
+
     def add_address(address)
       @db.exec("INSERT INTO addresses (
                   name, street_address, zip_code, city, state)
@@ -15,16 +30,16 @@ module SimpleAddressBook
     end
 
     def setup_tables
-      @db.exec(<<END_SQL)
-CREATE TABLE addresses (
-  id             SERIAL PRIMARY KEY,
-  name           VARCHAR NOT NULL,
-  street_address VARCHAR NOT NULL,
-  zip_code       INTEGER NOT NULL,
-  city           VARCHAR NOT NULL,
-  state          VARCHAR NOT NULL
-  );
-END_SQL
+      @db.exec(<<-END_SQL)
+               CREATE TABLE addresses (
+                 id             SERIAL PRIMARY KEY,
+                 name           VARCHAR NOT NULL,
+                 street_address VARCHAR NOT NULL,
+                 zip_code       INTEGER NOT NULL,
+                 city           VARCHAR NOT NULL,
+                 state          VARCHAR NOT NULL
+               );
+      END_SQL
     end
   end
 end

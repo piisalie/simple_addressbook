@@ -14,11 +14,18 @@ module SimpleAddressBook
     @db.add_address(@address)
   end
 
-  def self.lookup_address(address_book_name, find_by, entry)
+  def self.lookup_contact(address_book_name, find_by, entry)
     connect_database(address_book_name)
+    @db.find_contacts(find_by, entry) { |result| result.each do |contact| display_contact(contact) end }
   end
 
   private
+
+  def self.display_contact(contact)
+    contact.each do |key, value|
+      puts "#{key}: #{value}"
+    end
+  end
 
   def self.connect_database(name)
     @db = DBManager.new(name)

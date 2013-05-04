@@ -3,9 +3,9 @@ module SimpleAddressBook
     def initialize(args)
       setup_name(args.shift)
       setup_address(args.shift)
-      setup_zip(args.shift)
       setup_city(args.shift)
       setup_state(args.shift)
+      setup_zip(args.shift)
     end
 
     attr_reader :name, :street_address, :zip_code, :city, :state 
